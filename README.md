@@ -6,7 +6,7 @@
 
 ## 下载与启动
 
-- **Apple Silicon Mac（M系列）**：到本仓库 **Releases** 下载 `BackedUp-0.5.4-beta-macOS-arm64.zip`，解压并打开 `BackedUp.app`，应用会启动本地后台并打开浏览器。
+- **Apple Silicon Mac（M系列）**：到 [0.5.4-beta 下载页](https://github.com/songxing1206/BackedUp/releases/tag/v0.5.4-beta) 下载 `BackedUp-0.5.4-beta-macOS-arm64.zip`，解压并打开 `BackedUp.app`，应用会启动本地后台并打开浏览器。
 - 当前应用仅有临时完整性签名，未完成 Developer ID 签名及公证；macOS可能阻止打开。首次下载安装尚未在另一台干净Mac验收。
 - **源码运行**：安装 Python 3.10+，macOS双击 `启动.command`，Windows运行 `启动.bat`；也可运行 `python3 bootstrap.py`（Windows用 `py -3 bootstrap.py`）。首次启动联网安装依赖。
 - 服务默认打开 `http://localhost:8787/`，端口冲突时自动选择其他端口。源码启动时保持终端开启。
