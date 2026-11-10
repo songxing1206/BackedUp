@@ -1,0 +1,16 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const code=fs.readFileSync('web/evidence.js','utf8'),ctx={};vm.createContext(ctx);vm.runInContext(code.slice(code.indexOf('function compactEvidence'),code.indexOf('function appendSourceReview')),ctx);
+const evidence=(quote,extra={})=>({source_id:'s',pdf_sha256:'hash',block_id:'b',regions:[{physical_page:1}],role:'支持',quote,validation:'verified',location_state:'mapped',sentence_start:0,sentence_end:quote.length,...extra});
+const j=(claim,...items)=>({claim,evidence:items});
+const select=(...judgments)=>ctx.compactEvidence(judgments);
+let result=select(j('患病率',evidence('Rate 22% and 23%.'),evidence('Rate 22% and 23%. Repetition 20%.')));
+assert.equal(result.evidence.length,1);assert.equal(result.evidence[0].quote,'Rate 22% and 23%.');
+result=select(j('患病率',evidence('Rate 22%.')),j('重复性',evidence('Rate 22%. Repetition 20%.')));
+assert.equal(result.evidence.length,1);assert.equal(result.evidence[0].claims.size,2);assert(result.evidence[0].quote.includes('20%'));
+assert.equal(select(j('p',evidence('Rate 22%.'),evidence('Rate 23%.'))).evidence.length,2);
+assert.equal(select(j('p',evidence('Rate 22%.'),evidence('Rate 22%.',{role:'限制'}))).evidence.length,2);
+assert.equal(select(j('p',evidence('Rate 22%.'),evidence('Rate 22%.',{source_id:'other'}))).evidence.length,2);
+assert.equal(select(j('p',evidence('Rate 22%.'),evidence('Rate 22%.',{sentence_start:100,sentence_end:110}))).evidence.length,2);
+result=select(j('a',evidence('First.'),evidence('Second.'),evidence('Third.')),j('b',evidence('Other.')));
+assert(result.evidence.some(e=>e.claims.has('b')));assert.equal(result.extra,1);
+console.log('Evidence selection: containment, claim coverage, distinct values, roles, sources and occurrences passed.');

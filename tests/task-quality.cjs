@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict');
+const {lines}=require('../web/task-quality.js');
+assert.deepEqual(lines({}),[]);
+const rows=lines({evaluation:{execution_mode:'agent',review_mode:'retrieval',counts:{required:2,completed:1,source_unconfirmed:1,model_failed:0,no_evidence:0,evidence_unverified:0,localization_failed:1,human_review:2},model_requests:3,total_tokens:null,duration_seconds:10}});
+assert.match(rows[0],/单 Agent/);
+assert.match(rows[1],/1\/2/);
+assert.match(rows[2],/定位失败 1/);
+assert.match(rows[3],/未返回/);
+assert.match(rows[4],/不代表语义准确率/);
+console.log('Task quality summary and unknown token usage passed.');

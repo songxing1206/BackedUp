@@ -1,0 +1,15 @@
+const assert=require('assert'),fs=require('fs');
+const html=fs.readFileSync('web/index.html','utf8'),lab=fs.readFileSync('web/experiments.html','utf8'),guide=fs.readFileSync('web/guide.html','utf8'),settings=fs.readFileSync('app/model_settings.py','utf8');
+assert(html.includes('上传或粘贴待检稿件'));
+assert(html.includes('上传引用来源 PDF'));
+assert(html.includes('id="folder-files"')&&html.includes('webkitdirectory')&&html.includes('导入整个 PDF 文件夹'));
+assert(!html.includes('步骤 3 · 想检查什么？'));
+assert(html.indexOf('id="review-mode"')>html.indexOf('<details class="advanced-run-settings">')); 
+assert(html.includes('<details class="advanced-run-settings">'));
+assert(!html.includes('id="scope"'));
+for(const id of ['token-budget','request-budget'])assert(html.indexOf(`id="${id}"`)>html.indexOf('<details class="advanced-run-settings">'));
+assert(lab.includes('选择实验目的')&&lab.includes('高级设置（通常无需修改）'));
+assert(lab.includes('实验历史'));
+assert(settings.includes("'model':'deepseek-chat'")&&settings.includes('https://models.sjtu.edu.cn/api/v1'));
+assert(guide.includes('上传文件，然后开始核查')&&guide.includes('结果和历史记录'));
+console.log('Simple workflow: only files and review intent are primary; defaults, history and user guide are present.');

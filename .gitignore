@@ -1,0 +1,16 @@
+.venv/
+output/
+__pycache__/
+*.pyc
+.build-tools/
+build/
+dist/
+release/
+*.spec
+.env
+.env.*
+!*.example
+*.pem
+*.key
+model.json
+.execution/

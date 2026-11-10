@@ -1,0 +1,10 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const values={'backed-up-draft':'legacy'};
+const storage={getItem(k){return values[k]??null},setItem(k,v){values[k]=v},removeItem(k){delete values[k]}};
+const context={window:{},localStorage:storage,sessionStorage:storage};vm.createContext(context);vm.runInContext(fs.readFileSync('web/storage.js','utf8'),context);
+assert.equal(vm.runInContext("localData.getItem('backed-up-draft')",context),'legacy');
+context.window.storageVersion=2;assert.equal(vm.runInContext("localData.getItem('backed-up-draft')",context),null);
+vm.runInContext("localData.setItem('backed-up-draft','v2')",context);context.window.storageVersion=1;
+assert.equal(vm.runInContext("localData.getItem('backed-up-draft')",context),'legacy');
+vm.runInContext("localData.removeItem('backed-up-draft')",context);assert.equal(values['data-v2:backed-up-draft'],'v2');
+console.log('Browser drafts isolated by data format; v1 legacy preserved until explicit removal.');

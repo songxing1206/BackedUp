@@ -1,0 +1,21 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const evidenceCode=fs.readFileSync('web/evidence.js','utf8').split('// Original-source evidence')[0];const navigationCode=fs.readFileSync('web/automatic-review.js','utf8').split('function citationNavigationState')[1].split('function renderCitationNav')[0];const context={};vm.createContext(context);vm.runInContext(evidenceCode+'\nfunction citationNavigationState'+navigationCode,context);
+const ev=(mapped=true,validation='verified')=>({location_state:mapped?'mapped':'unmapped',validation});
+const loc={members:[{match:{status:'matched'}}]},review={state:'complete',material_complete:true,combined:{status:'支持'},claims:[{source_judgments:[{status:'支持',evidence:[ev()]}]}]};
+const state=(l,r)=>context.citationNavigationState(l,r).color;
+assert.equal(state(loc,review),'green');
+assert.equal(state(loc,{...review,combined:{status:'存在矛盾'},claims:[{source_judgments:[{status:'存在矛盾',issue_types:['统计'],evidence:[ev()]}]}]}),'red');
+assert.equal(state(loc,{...review,combined:{status:'不支持'},claims:[{source_judgments:[{status:'不支持',evidence:[ev()]}]}]}),'red');
+assert.equal(state(loc,{...review,combined:{status:'部分支持'},claims:[{source_judgments:[{status:'部分支持',evidence:[ev()]}]}]}),'yellow');
+assert.equal(state(loc,{...review,combined:{status:'部分支持'},claims:[{source_judgments:[{status:'部分支持',evidence:[ev()]},{status:'不支持',reason:'full text does not report the mechanism',evidence:[]}]}]}),'yellow');
+assert.equal(state(loc,{...review,combined:{status:'部分支持'},agent_result:{model_status:'incomplete'},claims:[{source_judgments:[{status:'部分支持',evidence:[ev()]},{status:'无法判断',evidence:[]}]}]}),'yellow');
+assert.equal(state(loc,null),'gray');assert.equal(state({members:[{match:{status:'unmatched'}}]},review),'gray');
+assert.equal(state(loc,{...review,claims:[{source_judgments:[{status:'支持',evidence:[ev(false)]}]}]}),'green');
+assert.equal(state(loc,{...review,claims:[{source_judgments:[{status:'支持',evidence:[{location_state:'mapped'}]}]}]}),'gray');
+assert.equal(state(loc,{...review,state:'stale'}),'gray');
+const yearLoc={members:[{match:{status:'needs_assignment',year_diagnosis:{status:'confirmed_error',reason:'正式年份为 2024'}}}]};assert.equal(state(yearLoc,null),'red');
+const mismatchLoc={members:[{match:{status:'unmatched',year_diagnosis:{status:'mismatch',reason:'引用 2008，PDF 2009'}}}]};assert.equal(state(mismatchLoc,null),'red');
+console.log('Four colors, missing source, confirmed year error, highlight independence and unverified evidence guards passed.');
+
+assert.equal(state(loc,{...review,claims:[{source_judgments:[{status:'部分支持',evidence:[ev()]},{status:'支持',evidence:[ev()]}]}]}),'green');
+console.log('Combined support remains green when individual sources provide complementary partial support.');

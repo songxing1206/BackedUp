@@ -1,0 +1,12 @@
+const assert=require('assert'),fs=require('fs');
+const html=fs.readFileSync('web/experiments.html','utf8'),js=fs.readFileSync('web/experiments.js','utf8'),css=fs.readFileSync('web/style.css','utf8');
+for(const id of ['architecture-flow','legacy-comparison','trace-flow','metric-cards','runner-dialog','confirm-paid'])assert(html.includes(`id="${id}"`),id);
+for(const route of ['/api/architecture','/api/experiments','/trace','/gold'])assert(js.includes(route),route);
+assert(js.includes("confirmed_paid_calls:true"));
+assert(js.includes("暂无人工金标评估结果"));
+assert(!html.includes('95%')&&!html.includes('0.95'),'formal page must not ship fabricated scores');
+assert(css.includes('.architecture-node')&&css.includes('.trace-node')&&css.includes('.metric-grid'));
+assert(html.includes('Legacy 与 V0.5')&&html.includes('比较三种上下文方案'));
+assert(html.includes('实验历史')&&html.includes('高级设置（通常无需修改）'));
+assert(!html.includes('runner-scope')&&!html.includes('前 3 个引用位置'));assert(js.includes("scope:'all'"));
+console.log('Architecture center: modules, A/B, trace, gold-gated metrics and paid-call confirmation passed.');

@@ -1,0 +1,18 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const source=fs.readFileSync('web/overview.js','utf8');
+const helper=source.slice(source.indexOf('function checkPresentation('),source.indexOf('function syncCheckPresentation('));
+const context={activeCheck:'new',workspaceView:'overview'};vm.createContext(context);vm.runInContext(helper,context);
+const record={id:'new-task'},old={id:'old-task'};
+const state=(task,status,id='new-task',checking=false)=>context.checkPresentation(task,{status,task_id:id},checking);
+assert.equal(state(old,'queued',undefined,true).overview,false);
+assert.equal(state(record,'running','new-task',true).overview,false);
+assert.equal(state(record,'completed').overview,true);
+assert.equal(state(record,'partial').overview,true);
+assert.equal(state(old,'completed').overview,false);
+assert.equal(state(record,'cancelled').overview,false);
+assert.equal(state(record,'failed').overview,false);
+assert.equal(context.checkPresentation(record,undefined,false).overview,false);
+assert.equal(state(record,'completed').progress,true);
+context.workspaceView='report';assert.equal(state(record,'completed').progress,false);
+const html=fs.readFileSync('web/index.html','utf8');assert(html.indexOf('id="check-progress"')<html.indexOf('id="overview"'));
+console.log('Check presentation passed: running, rerun, restored job, completed, partial, cancellation, failure, card order.');
