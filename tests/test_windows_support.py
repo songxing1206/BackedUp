@@ -14,7 +14,7 @@ class WindowsSupportTests(unittest.TestCase):
  def test_windows_lock_contention_has_timeout(self):
   native=types.SimpleNamespace(LK_NBLCK=1,LK_UNLCK=2,locking=Mock(side_effect=OSError('busy')))
   with tempfile.TemporaryDirectory() as d,patch.dict(sys.modules,{'msvcrt':native}),patch('sys.platform','win32'):
-   with self.assertRaisesRegex(RuntimeError,'启动流程'): 
+   with self.assertRaisesRegex(RuntimeError,'启动流程'):
     with startup_lock(Path(d)/'startup.lock',timeout=0):pass
  def test_explorer_receives_literal_unicode_path(self):
   with patch('sys.platform','win32'),patch('os.startfile',create=True) as start:

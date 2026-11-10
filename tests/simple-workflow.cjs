@@ -4,7 +4,7 @@ assert(html.includes('上传或粘贴待检稿件'));
 assert(html.includes('上传引用来源 PDF'));
 assert(html.includes('id="folder-files"')&&html.includes('webkitdirectory')&&html.includes('导入整个 PDF 文件夹'));
 assert(!html.includes('步骤 3 · 想检查什么？'));
-assert(html.indexOf('id="review-mode"')>html.indexOf('<details class="advanced-run-settings">')); 
+assert(html.indexOf('id="review-mode"')>html.indexOf('<details class="advanced-run-settings">'));
 assert(html.includes('<details class="advanced-run-settings">'));
 assert(!html.includes('id="scope"'));
 for(const id of ['token-budget','request-budget'])assert(html.indexOf(`id="${id}"`)>html.indexOf('<details class="advanced-run-settings">'));
