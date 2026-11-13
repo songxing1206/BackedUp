@@ -56,4 +56,4 @@ python scripts/verify_release.py
 
 ## 问题反馈
 
-请在Issues提供系统、芯片、版本、复现步骤和脱敏错误信息。不要上传API Key、个人论文全文或未经授权的PDF。
+请在Issues提供系统、芯片、版本、复现步骤和脱敏错误信息。
